@@ -7,4 +7,5 @@ import com.tikoyapps.justgothome.BuildConfig;
  */
 public interface Request {
     String SEND_SMS = BuildConfig.APPLICATION_ID+".action.send_sms";
+    String GET_CID = BuildConfig.APPLICATION_ID+".action.get_cid";
 }

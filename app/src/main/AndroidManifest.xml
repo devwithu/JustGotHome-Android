@@ -1,6 +1,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.tikoyapps.justgothome">
 
+  <!--For sending sms based text messages automatically-->
+  <uses-permission android:name="android.permission.SEND_SMS"/>
+
+  <!--For accessing the TelephonyManager PhoneStateListener etc-->
+  <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+
+  <!--For getting CellLocations-->
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
   <application
       android:name=".JGHApplication"
       android:allowBackup="true"
@@ -11,11 +20,10 @@
 
     <activity
         android:name=".MainActivity"
-        android:exported="false"
         android:screenOrientation="portrait">
       <intent-filter>
-        <action android:name="android.intent.action.MAIN"></action>
-        <category android:name="android.intent.category.LAUNCHER"></category>
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity>
 

@@ -8,9 +8,17 @@ import android.content.IntentFilter;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
+import android.telephony.CellLocation;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
+import android.telephony.gsm.GsmCellLocation;
 import android.util.Log;
 import com.tikoyapps.justgothome.actions.Request;
 import com.tikoyapps.justgothome.actions.Response;
+import com.tikoyapps.justgothome.data.CellId;
+import com.tikoyapps.justgothome.data.CellIdRepository;
+import com.tikoyapps.justgothome.data.CellIdRepositoryImpl;
+import io.realm.Realm;
 
 /**
  * Created by xcptan on 4/27/16.
@@ -27,8 +35,32 @@ public class AutoSmsService extends Service {
                 LocalBroadcastManager.getInstance(AutoSmsService.this)
                     .sendBroadcast(new Intent(Response.SEND_SMS_SUCCESS));
             }
+
+            if (intent.getAction().equals(Request.GET_CID)) {
+                CellLocation cellLocation = mTelephonyManager.getCellLocation();
+                if (cellLocation instanceof GsmCellLocation) {
+                    parseGsmLocation((GsmCellLocation) cellLocation);
+                }
+            }
         }
     };
+    private PhoneStateListener mPhoneStateListener;
+    private CellIdRepository mCellIdRepository;
+
+    private void parseGsmLocation(GsmCellLocation gsmCellLocation) {
+
+        int cid = gsmCellLocation.getCid();
+        int lac = gsmCellLocation.getLac();
+        int psc = gsmCellLocation.getPsc();
+
+        Log.d(TAG, "cid: " + cid + " lac: " + lac + " psc: " + psc);
+
+        CellId cellId = new CellId();
+        cellId.setCellId(cid);
+        mCellIdRepository.saveCellId(cellId);
+    }
+
+    private TelephonyManager mTelephonyManager;
 
     @Nullable
     @Override
@@ -41,8 +73,22 @@ public class AutoSmsService extends Service {
         super.onCreate();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Request.SEND_SMS);
+        intentFilter.addAction(Request.GET_CID);
         LocalBroadcastManager.getInstance(getApplicationContext())
             .registerReceiver(mReceiver, intentFilter);
+        mTelephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
+        mPhoneStateListener = new PhoneStateListener() {
+            @Override
+            public void onCellLocationChanged(CellLocation cellLocation) {
+                if (cellLocation instanceof GsmCellLocation) {
+                    parseGsmLocation((GsmCellLocation) cellLocation);
+                    // Add to db with timestamp if place changed
+                    // Run through relevant cell ids we'd want
+                }
+            }
+        };
+        mTelephonyManager.listen(mPhoneStateListener, PhoneStateListener.LISTEN_CELL_LOCATION);
+        mCellIdRepository = new CellIdRepositoryImpl();
     }
 
     @Override
