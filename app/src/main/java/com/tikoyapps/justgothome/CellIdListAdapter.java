@@ -22,6 +22,11 @@ public class CellIdListAdapter extends RecyclerView.Adapter<CellIdListAdapter.VH
         this.mCellIdList = cellIdList;
     }
 
+    public void updateList(List<CellId> cellIdList){
+        this.mCellIdList = cellIdList;
+        notifyDataSetChanged();;
+    }
+
     @Override
     public VH onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.cellid_list_item,parent);

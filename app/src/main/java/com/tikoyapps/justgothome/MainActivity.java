@@ -20,8 +20,11 @@ import android.widget.Toast;
 import com.tikoyapps.justgothome.actions.Request;
 import com.tikoyapps.justgothome.actions.Response;
 import com.tikoyapps.justgothome.data.CellId;
+import com.tikoyapps.justgothome.data.CellIdRepository;
+import com.tikoyapps.justgothome.data.CellIdRepositoryImpl;
 import com.tikoyapps.justgothome.sms.AutoSmsService;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by xcptan on 4/27/16.
@@ -65,6 +68,15 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 LocalBroadcastManager.getInstance(MainActivity.this)
                     .sendBroadcast(new Intent(Request.GET_CID));
+
+                CellIdRepository cellIdRepository = new CellIdRepositoryImpl();
+                cellIdRepository.getCellIds(new CellIdRepository.LoadCellIdsCallback() {
+                    @Override
+                    public void onCellIdsLoaded(List<CellId> cellIds) {
+                        mCellIdListAdapter.updateList(cellIds);
+                    }
+                });
+
             }
         });
 

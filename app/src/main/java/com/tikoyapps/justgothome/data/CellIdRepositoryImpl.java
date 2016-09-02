@@ -20,7 +20,9 @@ public class CellIdRepositoryImpl implements CellIdRepository {
         RealmResults<CellId> realmResults = realm.where(CellId.class).findAll();
         List<CellId> cellIdList =
             Arrays.asList(realmResults.toArray(new CellId[realmResults.size()]));
+
         callback.onCellIdsLoaded(cellIdList);
+
         realm.commitTransaction();
         realm.close();
     }
