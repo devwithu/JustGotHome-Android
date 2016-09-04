@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import com.tikoyapps.justgothome.data.CellId;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -16,28 +18,31 @@ public class CellIdListAdapter extends RecyclerView.Adapter<CellIdListAdapter.VH
 
     private Context mContext;
     private List<CellId> mCellIdList;
+    private DateFormat mDateFormat = DateFormat.getDateTimeInstance();
 
     public CellIdListAdapter(Context context, List<CellId> cellIdList) {
         this.mContext = context;
         this.mCellIdList = cellIdList;
     }
 
-    public void updateList(List<CellId> cellIdList){
+    public void updateList(List<CellId> cellIdList) {
         this.mCellIdList = cellIdList;
-        notifyDataSetChanged();;
+        notifyDataSetChanged();
+        ;
     }
 
     @Override
     public VH onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.cellid_list_item,parent);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.cellid_list_item, parent, false);
         return new VH(view);
     }
 
     @Override
     public void onBindViewHolder(VH holder, int position) {
         CellId cellId = mCellIdList.get(position);
-        holder.cellIdTextView.setText(cellId.getCellId());
-        holder.idTextView.setText(cellId.getId());
+        holder.cellIdTextView.setText("cell id: " + cellId.getCellId());
+        holder.idTextView.setText("id: " + cellId.getId());
+        holder.timeStampTextView.setText(mDateFormat.format(new Date(cellId.getTimestamp())));
         holder.itemView.setTag(cellId);
     }
 
@@ -53,9 +58,9 @@ public class CellIdListAdapter extends RecyclerView.Adapter<CellIdListAdapter.VH
 
         public VH(View itemView) {
             super(itemView);
-            cellIdTextView = (TextView)itemView.findViewById(R.id.cellid_list_item_cellid);
-            timeStampTextView = (TextView)itemView.findViewById(R.id.cellid_list_item_timestamp);
-            idTextView = (TextView)itemView.findViewById(R.id.cellid_list_item_id);
+            cellIdTextView = (TextView) itemView.findViewById(R.id.cellid_list_item_cellid);
+            timeStampTextView = (TextView) itemView.findViewById(R.id.cellid_list_item_timestamp);
+            idTextView = (TextView) itemView.findViewById(R.id.cellid_list_item_id);
         }
     }
 }

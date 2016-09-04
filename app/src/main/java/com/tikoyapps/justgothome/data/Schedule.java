@@ -1,15 +1,10 @@
 package com.tikoyapps.justgothome.data;
 
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
-import java.util.List;
-
 /**
  * Created by xcptan on 01/09/2016.
  */
-public class Schedule extends RealmObject{
+public class Schedule {
 
-    @PrimaryKey
     private int id;
 
     private int placeId;

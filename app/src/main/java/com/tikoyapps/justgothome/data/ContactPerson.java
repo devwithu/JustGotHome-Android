@@ -1,14 +1,10 @@
 package com.tikoyapps.justgothome.data;
 
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
-
 /**
  * Created by xcptan on 01/09/2016.
  */
-public class ContactPerson extends RealmObject {
+public class ContactPerson {
 
-    @PrimaryKey
     private int id;
 
     private String displayName;

@@ -1,9 +1,8 @@
 package com.tikoyapps.justgothome.data;
 
 import android.support.annotation.NonNull;
-import io.realm.Realm;
-import io.realm.RealmResults;
-import java.util.Arrays;
+import com.raizlabs.android.dbflow.sql.language.SQLite;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,38 +14,32 @@ public class CellIdRepositoryImpl implements CellIdRepository {
     public void getCellIds(
         @NonNull
         LoadCellIdsCallback callback) {
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        RealmResults<CellId> realmResults = realm.where(CellId.class).findAll();
-        List<CellId> cellIdList =
-            Arrays.asList(realmResults.toArray(new CellId[realmResults.size()]));
+
+        List<CellId> cellIdList = new ArrayList<CellId>();
+        cellIdList.addAll(SQLite.select().from(CellId.class).queryList());
 
         callback.onCellIdsLoaded(cellIdList);
-
-        realm.commitTransaction();
-        realm.close();
     }
 
     @Override
     public void getCellId(
         @NonNull
-        String placeId,
+        String id,
         @NonNull
         GetCellIdCallback callback) {
 
+        CellId cell = SQLite.select()
+            .from(CellId.class)
+            .where(CellId_Table.id.eq(Long.valueOf(id)))
+            .querySingle();
+        callback.onCellIdLoaded(cell);
     }
 
     @Override
     public void saveCellId(
         @NonNull
         CellId cellId) {
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        CellId realmCellId = realm.createObject(CellId.class);
-        realmCellId.setCellId(cellId.getCellId());
-        realm.copyToRealm(realmCellId);
-        realm.commitTransaction();
-        realm.close();
+        cellId.save();
     }
 
     @Override

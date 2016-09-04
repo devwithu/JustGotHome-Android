@@ -1,14 +1,13 @@
 package com.tikoyapps.justgothome;
 
-import android.Manifest;
+import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,7 +15,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 import com.tikoyapps.justgothome.actions.Request;
 import com.tikoyapps.justgothome.actions.Response;
 import com.tikoyapps.justgothome.data.CellId;
@@ -51,7 +49,9 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private Button sendSmsButton;
+    private FloatingActionButton sendSmsButton;
+
+    private CellIdRepository mCellIdRepository;
 
     @Override
     protected void onCreate(
@@ -60,47 +60,37 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
 
-        mRecyclerView = (RecyclerView)findViewById(R.id.cellid_list);
+        mCellIdRepository = new CellIdRepositoryImpl();
 
-        sendSmsButton = (Button) findViewById(R.id.main_activity_sendsms_button);
+        mRecyclerView = (RecyclerView) findViewById(R.id.cellid_list);
+
+        sendSmsButton = (FloatingActionButton) findViewById(R.id.main_activity_getcellid_button);
         sendSmsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 LocalBroadcastManager.getInstance(MainActivity.this)
                     .sendBroadcast(new Intent(Request.GET_CID));
 
-                CellIdRepository cellIdRepository = new CellIdRepositoryImpl();
-                cellIdRepository.getCellIds(new CellIdRepository.LoadCellIdsCallback() {
+                mCellIdRepository.getCellIds(new CellIdRepository.LoadCellIdsCallback() {
                     @Override
                     public void onCellIdsLoaded(List<CellId> cellIds) {
                         mCellIdListAdapter.updateList(cellIds);
                     }
                 });
-
             }
         });
 
-        String[] requiredPermissions = new String[] {
-            Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.READ_PHONE_STATE,
-            Manifest.permission.SEND_SMS
-        };
-
-        ActivityCompat.requestPermissions(this, requiredPermissions, 200);
-
-        mCellIdListAdapter = new CellIdListAdapter(this,new ArrayList<CellId>());
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
+        mCellIdListAdapter = new CellIdListAdapter(this, new ArrayList<CellId>());
+        mRecyclerView.setLayoutManager(
+            new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mRecyclerView.setAdapter(mCellIdListAdapter);
-    }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-        @NonNull
-        String[] permissions,
-        @NonNull
-        int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        Toast.makeText(MainActivity.this, "Permissions granted", Toast.LENGTH_SHORT).show();
+        mCellIdRepository.getCellIds(new CellIdRepository.LoadCellIdsCallback() {
+            @Override
+            public void onCellIdsLoaded(List<CellId> cellIds) {
+                mCellIdListAdapter.updateList(cellIds);
+            }
+        });
     }
 
     @Override
@@ -112,13 +102,25 @@ public class MainActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(getApplicationContext())
             .registerReceiver(mReceiver, intentFilter);
 
-        startService(new Intent(this, AutoSmsService.class));
+        if (!isMyServiceRunning(AutoSmsService.class)) {
+            startService(new Intent(this, AutoSmsService.class));
+        }
     }
 
     @Override
     protected void onStop() {
         LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(mReceiver);
-        stopService(new Intent(this, AutoSmsService.class));
         super.onStop();
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(
+            Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

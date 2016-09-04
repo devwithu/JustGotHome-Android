@@ -1,16 +1,10 @@
 package com.tikoyapps.justgothome.data;
 
-import io.realm.RealmList;
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
-import java.util.List;
-
 /**
  * Created by xcptan on 01/09/2016.
  */
-public class Place extends RealmObject{
+public class Place {
 
-    @PrimaryKey
     private int id;
 
     private String placeName;

@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
@@ -18,7 +19,7 @@ import com.tikoyapps.justgothome.actions.Response;
 import com.tikoyapps.justgothome.data.CellId;
 import com.tikoyapps.justgothome.data.CellIdRepository;
 import com.tikoyapps.justgothome.data.CellIdRepositoryImpl;
-import io.realm.Realm;
+import java.util.Calendar;
 
 /**
  * Created by xcptan on 4/27/16.
@@ -55,8 +56,9 @@ public class AutoSmsService extends Service {
 
         Log.d(TAG, "cid: " + cid + " lac: " + lac + " psc: " + psc);
 
-        CellId cellId = new CellId();
-        cellId.setCellId(cid);
+        CellId cellId = new CellId("" + cid);
+        cellId.setTimestamp(Calendar.getInstance().getTimeInMillis());
+
         mCellIdRepository.saveCellId(cellId);
     }
 
@@ -66,6 +68,12 @@ public class AutoSmsService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    public class ServiceBinder extends Binder {
+        public AutoSmsService getService(){
+            return AutoSmsService.this;
+        }
     }
 
     @Override
