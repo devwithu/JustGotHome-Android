@@ -1,4 +1,4 @@
-package com.tikoyapps.justgothome;
+package com.tikoyapps.justgothome.cellid;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import com.tikoyapps.justgothome.R;
 import com.tikoyapps.justgothome.data.CellId;
 import java.text.DateFormat;
 import java.util.Date;

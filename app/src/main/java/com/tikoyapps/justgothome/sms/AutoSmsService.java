@@ -1,21 +1,16 @@
 package com.tikoyapps.justgothome.sms;
 
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.support.v4.content.LocalBroadcastManager;
 import android.telephony.CellLocation;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
 import android.util.Log;
-import com.tikoyapps.justgothome.actions.Request;
-import com.tikoyapps.justgothome.actions.Response;
 import com.tikoyapps.justgothome.data.CellId;
 import com.tikoyapps.justgothome.data.CellIdRepository;
 import com.tikoyapps.justgothome.data.CellIdRepositoryImpl;
@@ -28,23 +23,6 @@ public class AutoSmsService extends Service {
 
     private static final String TAG = AutoSmsService.class.getSimpleName();
 
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(Request.SEND_SMS)) {
-                Log.d(TAG, "Trying to send SMS");
-                LocalBroadcastManager.getInstance(AutoSmsService.this)
-                    .sendBroadcast(new Intent(Response.SEND_SMS_SUCCESS));
-            }
-
-            if (intent.getAction().equals(Request.GET_CID)) {
-                CellLocation cellLocation = mTelephonyManager.getCellLocation();
-                if (cellLocation instanceof GsmCellLocation) {
-                    parseGsmLocation((GsmCellLocation) cellLocation);
-                }
-            }
-        }
-    };
     private PhoneStateListener mPhoneStateListener;
     private CellIdRepository mCellIdRepository;
 
@@ -79,11 +57,6 @@ public class AutoSmsService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Request.SEND_SMS);
-        intentFilter.addAction(Request.GET_CID);
-        LocalBroadcastManager.getInstance(getApplicationContext())
-            .registerReceiver(mReceiver, intentFilter);
         mTelephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
         mPhoneStateListener = new PhoneStateListener() {
             @Override
@@ -101,7 +74,6 @@ public class AutoSmsService extends Service {
 
     @Override
     public void onDestroy() {
-        LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(mReceiver);
         super.onDestroy();
     }
 }

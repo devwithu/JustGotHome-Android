@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
+import com.tikoyapps.justgothome.cellid.CellIdActivity;
 
 /**
  * Created by xcptan on 04/09/2016.
@@ -46,7 +47,7 @@ public class Splash extends AppCompatActivity {
 
         if (allGranted) {
             Toast.makeText(Splash.this, "Permissions granted", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(this, MainActivity.class));
+            startActivity(new Intent(this, CellIdActivity.class));
             finish();
         }
         else {
