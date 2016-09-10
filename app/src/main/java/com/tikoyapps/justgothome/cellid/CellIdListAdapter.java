@@ -20,16 +20,18 @@ public class CellIdListAdapter extends RecyclerView.Adapter<CellIdListAdapter.VH
     private Context mContext;
     private List<CellId> mCellIdList;
     private DateFormat mDateFormat = DateFormat.getDateTimeInstance();
+    private CellIdContract.Presenter mCellIdPresenter;
 
-    public CellIdListAdapter(Context context, List<CellId> cellIdList) {
+    public CellIdListAdapter(Context context, List<CellId> cellIdList,
+        CellIdContract.Presenter cellIdPresenter) {
         this.mContext = context;
         this.mCellIdList = cellIdList;
+        this.mCellIdPresenter = cellIdPresenter;
     }
 
     public void updateList(List<CellId> cellIdList) {
         this.mCellIdList = cellIdList;
         notifyDataSetChanged();
-        ;
     }
 
     @Override
@@ -40,11 +42,16 @@ public class CellIdListAdapter extends RecyclerView.Adapter<CellIdListAdapter.VH
 
     @Override
     public void onBindViewHolder(VH holder, int position) {
-        CellId cellId = mCellIdList.get(position);
+        final CellId cellId = mCellIdList.get(position);
         holder.cellIdTextView.setText("cell id: " + cellId.getCellId());
         holder.idTextView.setText("id: " + cellId.getId());
         holder.timeStampTextView.setText(mDateFormat.format(new Date(cellId.getTimestamp())));
-        holder.itemView.setTag(cellId);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCellIdPresenter.chooseAction(cellId);
+            }
+        });
     }
 
     @Override

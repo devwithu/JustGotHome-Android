@@ -1,10 +1,10 @@
 package com.tikoyapps.justgothome.cellid;
 
-import android.content.Context;
-import android.support.annotation.Nullable;
 import com.raizlabs.android.dbflow.runtime.FlowContentObserver;
+import com.raizlabs.android.dbflow.sql.language.SQLCondition;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.raizlabs.android.dbflow.structure.Model;
+import com.tikoyapps.justgothome.UIThread;
 import com.tikoyapps.justgothome.data.CellId;
 import com.tikoyapps.justgothome.data.CellIdRepository;
 import java.util.List;
@@ -15,23 +15,19 @@ import java.util.List;
 public class CellIdPresenter implements CellIdContract.Presenter {
 
     CellIdContract.View mView;
-    CellIdRepository mCellIdRepository;
-    FlowContentObserver mFlowContentObserver;
-    Context mContext;
+    CellIdRepository mRepository;
+    FlowContentObserver mObserver;
 
-    public CellIdPresenter(Context context, CellIdRepository cellIdRepository,
-        CellIdContract.View view) {
-        this.mContext = context;
+    public CellIdPresenter(CellIdRepository repository, CellIdContract.View view) {
         this.mView = view;
-        this.mCellIdRepository = cellIdRepository;
-        this.mFlowContentObserver = new FlowContentObserver();
-        mView.setPresenter(this);
+        this.mRepository = repository;
+        this.mObserver = new FlowContentObserver();
+        this.mView.setPresenter(this);
     }
 
     @Override
     public void requestCellId() {
-        //Should call to api first
-        mCellIdRepository.getCellIds(new CellIdRepository.LoadCellIdsCallback() {
+        mRepository.getCellIds(new CellIdRepository.LoadCellIdsCallback() {
             @Override
             public void onCellIdsLoaded(List<CellId> cellIds) {
                 mView.updateList(cellIds);
@@ -40,18 +36,27 @@ public class CellIdPresenter implements CellIdContract.Presenter {
     }
 
     @Override
+    public void chooseAction(CellId cellid) {
+        mView.showChooseAction(cellid);
+    }
+
+    @Override
     public void start() {
-        mFlowContentObserver.registerForContentChanges(mContext, CellId.class);
-        mFlowContentObserver.addOnTableChangedListener(
-            new FlowContentObserver.OnTableChangedListener() {
+        mObserver.registerForContentChanges(mView.getContext(), CellId.class);
+        mObserver.addModelChangeListener(
+            new FlowContentObserver.OnModelStateChangedListener() {
                 @Override
-                public void onTableChanged(
-                    @Nullable
-                    Class<? extends Model> tableChanged, BaseModel.Action action) {
-                    mCellIdRepository.getCellIds(new CellIdRepository.LoadCellIdsCallback() {
+                public void onModelStateChanged(Class<? extends Model> table,
+                    BaseModel.Action action, SQLCondition[] primaryKeyValues) {
+                    mRepository.getCellIds(new CellIdRepository.LoadCellIdsCallback() {
                         @Override
-                        public void onCellIdsLoaded(List<CellId> cellIds) {
-                            mView.updateList(cellIds);
+                        public void onCellIdsLoaded(final List<CellId> cellIds) {
+                            UIThread.getInstance().post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mView.updateList(cellIds);
+                                }
+                            });
                         }
                     });
                 }
@@ -60,6 +65,6 @@ public class CellIdPresenter implements CellIdContract.Presenter {
 
     @Override
     public void stop() {
-        mFlowContentObserver.unregisterForContentChanges(mContext);
+        mObserver.unregisterForContentChanges(mView.getContext());
     }
 }

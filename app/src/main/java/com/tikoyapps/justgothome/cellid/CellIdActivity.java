@@ -34,13 +34,12 @@ public class CellIdActivity extends AppCompatActivity {
             transaction.add(R.id.contentFrame, cellIdFragment);
             transaction.commit();
 
-            //Create presenter, fragment will have reference of presenter through the setPresenter
-            // invoked from BaseContract.View
-
-            //Temporary, must use injection for repository
-            new CellIdPresenter(this, new CellIdRepositoryImpl(),cellIdFragment);
         }
+        //Create presenter, fragment will have reference of presenter through the setPresenter
+        // invoked from BaseContract.View
 
+        //Temporary, must use injection for repository
+        new CellIdPresenter(new CellIdRepositoryImpl(), cellIdFragment);
     }
 
     @Override

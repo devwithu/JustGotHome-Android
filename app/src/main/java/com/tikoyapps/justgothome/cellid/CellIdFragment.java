@@ -6,6 +6,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,8 +36,8 @@ public class CellIdFragment extends Fragment implements CellIdContract.View {
 
     @Override
     public void onStart() {
-        mPresenter.start();
         super.onStart();
+        mPresenter.start();
     }
 
     @Override
@@ -59,7 +60,8 @@ public class CellIdFragment extends Fragment implements CellIdContract.View {
                 mPresenter.requestCellId();
             }
         });
-        mCellIdListAdapter = new CellIdListAdapter(getActivity(), new ArrayList<CellId>());
+        mCellIdListAdapter =
+            new CellIdListAdapter(getActivity(), new ArrayList<CellId>(), mPresenter);
         RecyclerView.LayoutManager layoutManager =
             new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         binding.cellidList.setLayoutManager(layoutManager);
@@ -76,6 +78,12 @@ public class CellIdFragment extends Fragment implements CellIdContract.View {
         binding.cellidList.smoothScrollToPosition(0);
         Snackbar.make(getActivity().findViewById(android.R.id.content), "Cell IDs updated",
             Snackbar.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void showChooseAction(CellId cellId) {
+        //TODO Inflate choices here
+        Log.d("CellIdFragment", "showChooseAction: Pressed: " + cellId.toString());
     }
 
     @Override

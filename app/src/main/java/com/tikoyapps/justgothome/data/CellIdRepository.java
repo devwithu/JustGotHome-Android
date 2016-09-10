@@ -22,7 +22,7 @@ public interface CellIdRepository {
 
     void getCellId(
         @NonNull
-        String id,
+        Long id,
         @NonNull
         GetCellIdCallback callback);
 

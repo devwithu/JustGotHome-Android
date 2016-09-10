@@ -11,9 +11,11 @@ import java.util.List;
 public interface CellIdContract {
     interface View extends BaseView<Presenter> {
         void updateList(List<CellId> cellIdList);
+        void showChooseAction(CellId cellId);
     }
 
     interface Presenter extends BasePresenter {
         void requestCellId();
+        void chooseAction(CellId cellid);
     }
 }

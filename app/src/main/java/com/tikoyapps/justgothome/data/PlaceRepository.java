@@ -16,19 +16,29 @@ public interface PlaceRepository {
         void onPlaceLoaded(Place place);
     }
 
+    interface DeletePlaceCallback {
+        void onPlaceDeleted(Place place);
+    }
+
+    interface AddPlaceCallback {
+        void onPlaceAdded(Place place);
+    }
+
     void getPlaces(
         @NonNull
         LoadPlacesCallback callback);
 
     void getPlace(
         @NonNull
-        String placeId,
+        Long id,
         @NonNull
         GetPlaceCallback callback);
 
-    void savePlace(
+    void deletePlace(Long id, DeletePlaceCallback callback);
+
+    void addPlace(
         @NonNull
-        Place place);
+        Place place, AddPlaceCallback callback);
 
     void refreshData();
 }

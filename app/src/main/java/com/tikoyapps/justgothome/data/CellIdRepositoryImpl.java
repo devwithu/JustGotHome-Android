@@ -24,7 +24,7 @@ public class CellIdRepositoryImpl implements CellIdRepository {
     @Override
     public void getCellId(
         @NonNull
-        String id,
+        Long id,
         @NonNull
         GetCellIdCallback callback) {
 

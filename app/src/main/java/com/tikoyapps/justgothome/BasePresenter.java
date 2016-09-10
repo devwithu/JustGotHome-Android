@@ -5,8 +5,10 @@ package com.tikoyapps.justgothome;
  */
 public interface BasePresenter {
 
+    // Do initialization here like rx subscription
     void start();
 
+    // Do destructors here like rx unsubscribe or DBFlow unwatch tables
     void stop();
 
 }

@@ -62,4 +62,15 @@ public class CellId extends BaseModel{
     public void setPlaceId(String placeId) {
         this.placeId = placeId;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CellId{");
+        sb.append("id=").append(id);
+        sb.append(", cellId='").append(cellId).append('\'');
+        sb.append(", placeId='").append(placeId).append('\'');
+        sb.append(", timestamp=").append(timestamp);
+        sb.append('}');
+        return sb.toString();
+    }
 }
