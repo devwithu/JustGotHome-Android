@@ -49,7 +49,7 @@ public class CellIdListAdapter extends RecyclerView.Adapter<CellIdListAdapter.VH
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCellIdPresenter.chooseAction(cellId);
+                mCellIdPresenter.openChooseActionDialog(cellId);
             }
         });
     }

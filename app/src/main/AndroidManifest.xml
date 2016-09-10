@@ -22,6 +22,9 @@
         android:name=".cellid.CellIdActivity"
         android:screenOrientation="portrait"/>
     <activity
+        android:name=".place.PlaceActivity"
+        android:screenOrientation="portrait"/>
+    <activity
         android:name=".Splash"
         android:screenOrientation="portrait">
       <intent-filter>

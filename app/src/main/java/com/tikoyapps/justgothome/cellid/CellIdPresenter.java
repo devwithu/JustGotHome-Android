@@ -36,8 +36,13 @@ public class CellIdPresenter implements CellIdContract.Presenter {
     }
 
     @Override
-    public void chooseAction(CellId cellid) {
+    public void openChooseActionDialog(CellId cellid) {
         mView.showChooseAction(cellid);
+    }
+
+    @Override
+    public void openPlacesList() {
+        mView.showPlacesList();
     }
 
     @Override

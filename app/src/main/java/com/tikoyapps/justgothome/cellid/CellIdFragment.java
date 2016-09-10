@@ -1,5 +1,6 @@
 package com.tikoyapps.justgothome.cellid;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 import com.tikoyapps.justgothome.data.CellId;
 import com.tikoyapps.justgothome.data.CellIdRepository;
 import com.tikoyapps.justgothome.databinding.CellidFragmentBinding;
+import com.tikoyapps.justgothome.place.PlaceActivity;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,18 +56,18 @@ public class CellIdFragment extends Fragment implements CellIdContract.View {
         @Nullable
         Bundle savedInstanceState) {
         binding = CellidFragmentBinding.inflate(inflater, container, false);
-        binding.requestcellidButton.setOnClickListener(new View.OnClickListener() {
+        binding.cellidFragmentShowplacesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mPresenter.requestCellId();
+                mPresenter.openPlacesList();
             }
         });
         mCellIdListAdapter =
             new CellIdListAdapter(getActivity(), new ArrayList<CellId>(), mPresenter);
         RecyclerView.LayoutManager layoutManager =
             new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        binding.cellidList.setLayoutManager(layoutManager);
-        binding.cellidList.setAdapter(mCellIdListAdapter);
+        binding.cellidFragmentList.setLayoutManager(layoutManager);
+        binding.cellidFragmentList.setAdapter(mCellIdListAdapter);
 
         mPresenter.requestCellId();
 
@@ -75,7 +77,6 @@ public class CellIdFragment extends Fragment implements CellIdContract.View {
     @Override
     public void updateList(List<CellId> cellIdList) {
         mCellIdListAdapter.updateList(cellIdList);
-        binding.cellidList.smoothScrollToPosition(0);
         Snackbar.make(getActivity().findViewById(android.R.id.content), "Cell IDs updated",
             Snackbar.LENGTH_LONG).show();
     }
@@ -84,6 +85,12 @@ public class CellIdFragment extends Fragment implements CellIdContract.View {
     public void showChooseAction(CellId cellId) {
         //TODO Inflate choices here
         Log.d("CellIdFragment", "showChooseAction: Pressed: " + cellId.toString());
+    }
+
+    @Override
+    public void showPlacesList() {
+        Intent intent = new Intent(getContext(), PlaceActivity.class);
+        startActivity(intent);
     }
 
     @Override

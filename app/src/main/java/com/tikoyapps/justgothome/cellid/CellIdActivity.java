@@ -26,12 +26,12 @@ public class CellIdActivity extends AppCompatActivity {
         setContentView(R.layout.main_activity);
 
         CellIdFragment cellIdFragment =
-            (CellIdFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
+            (CellIdFragment) getSupportFragmentManager().findFragmentById(R.id.main_activity_content);
         if (null == cellIdFragment) {
             cellIdFragment = CellIdFragment.newInstance(null);
 
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.add(R.id.contentFrame, cellIdFragment);
+            transaction.add(R.id.main_activity_content, cellIdFragment);
             transaction.commit();
 
         }
